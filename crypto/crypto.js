@@ -20,7 +20,7 @@ const generateParameters = () => {
         generateParameters();
     }
     // phi is also important
-    const phi = (p.subtract(1)) * (q.subtract(1));
+    const phi = p.subtract(1).multiply(q.subtract(1));
 
     // so is n
     if (bigInt(1).equals(bigInt.gcd(phi, p.multiply(q)))) {
@@ -47,9 +47,11 @@ const generateParameters = () => {
     console.log(n.square());
     const nsquare = n.square();
     const u = g.modPow(lambda, nsquare);
-    console.log("u: " + u);
+    console.log(u);
     const lu = u.subtract(1);
+    console.log(lu);
     const k =  lu.over(n);
+    console.log(bigInt.gcd(k,n));
     const mu = k.modInv(n);
 
 

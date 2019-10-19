@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from 'react';
-import "./votingauthority.css"
+import "../styles/votingauthority.css"
 import axios from "axios";
 const bigInt = require('big-integer');
 
@@ -38,6 +38,7 @@ class VotingAuthority extends Component {
 
     countVotes = () => {
         axios.get('/votes/count').then((res) => {
+            console.log(res.data);
             const lambda = bigInt(res.data.lambda);
             const mu = bigInt(res.data.mu);
             const n = bigInt(res.data.n);
@@ -45,10 +46,12 @@ class VotingAuthority extends Component {
 
             // m = L(c^(lambda) mod n^2)*mu mod n
             const lu = c.modPow(lambda,n.square()).minus(1).divide(n);
+            console.log(lu);
             const m = lu.multiply(mu).mod(n);
             console.log(m);
 
-            const mProper = Number(m.toString()).toString(2);
+            const mProper = m.toString(2);
+            console.log(mProper);
             const mLength = mProper.length;
             const bits =  6 - mLength;
             let nZeroes = "";

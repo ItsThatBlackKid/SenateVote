@@ -11,18 +11,15 @@ const bigInt = require("big-integer");
 class VotingBooth extends Component {
     state = {
         votes: [],
-        vote: null,
+        vote: 0,
         message: "",
     };
 
-    componentWillMount() {
+    componentDidMount() {
         client.crypto.getPublicKey().then((res) => {
             sessionStorage.setItem("n", res.data.n);
             sessionStorage.setItem("g", res.data.g)
         });
-
-
-
     }
 
     onClick = (e) => {
@@ -31,10 +28,17 @@ class VotingBooth extends Component {
 
     makeVote = (e) => {
         const r = bigInt.randBetween("1", "400");
-        const n = sessionStorage.getItem("n");
-        const g = sessionStorage.getItem("g");
+        const n = bigInt(sessionStorage.getItem("n"));
+        console.log(n);
+        const g = bigInt(sessionStorage.getItem("g"));
+        console.log(g);
+
         const num = this.state.vote;
+        console.log(num);
+        console.log(g.modPow(num,n.square()));
+        console.log(r.modPow(n,n.square()));
         const c = g.modPow(num, n.square()).multiply(r.modPow(n, n.square()));
+        console.log(c);
 
         this.setState({
             votes: this.state.votes.concat([c]),
@@ -43,8 +47,9 @@ class VotingBooth extends Component {
     };
 
     submitVote = (e) => {
-
-
+        if(this.state.votes.length === 0) {
+            return;
+        }
         client.vote.makeVote(this.state.votes).then((res) => {
             this.setState({
                 message: "Vote submitted",
@@ -59,7 +64,7 @@ class VotingBooth extends Component {
         return (
             <Fragment>
                 <div className={"wrapper"}>
-                    <div>
+                    <div style={{width: "90vw"}}>
                     <div className={"voteWrapper"}>
                         <div className={"vote"} id={"8"} onClick={this.onClick}>
                             <img alt={"vote for alice"} src={alice}/>
@@ -74,12 +79,13 @@ class VotingBooth extends Component {
                                 <div><img alt={"tick"} height={40} width={40} color={"white"} src={tick}/></div> : ""}
                         </div>
                     </div>
-                    <button className={"submit"} onClick={this.submitVote}>Make Vote</button>
+                    <button className={"submit"} onClick={this.makeVote}>Make Vote</button>
                     </div>
                     <div id={"n-votes"}>
+                        <button onClick={this.submitVote} className={"submit"}>Submit Votes</button>
                         {this.state.votes.map((vote) =>
                             <p key={vote} className={"vote-show"}>
-                                vote: {this.state.votes.indexOf(vote)}
+                                vote: {this.state.votes.indexOf(vote) +1}
                             </p>
                         )}
                     </div>

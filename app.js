@@ -9,7 +9,7 @@ const Pool = require('pg').Pool;
 
 const postgresdb = process.env.POSTGRES_DB || "senatevote";
 const postgreshost = process.env.POSTGRES_HOST || "localhost";
-const postgresuser = process.env.POSTGRES_USER || "sheku";
+const postgresuser = process.env.POSTGRES_USER || "shekukanneh";
 const postgrespass = process.env.POSTGRES_PWD || "pokemon244";
 const pool = new Pool({
   user:postgresuser,
@@ -40,6 +40,7 @@ const app = express();
 
 
 const primes = generateParameters();
+console.log(primes);
 console.log("Key parameters generated.");
 
 app.locals.parameters = primes;

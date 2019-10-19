@@ -9,7 +9,6 @@ const router = express.Router();
 const receiveVote = (req, res) => {
     const newVote = req.body.vote;
     const postgres = req.app.locals.postgres;
-    console.log(newVote);
 
     // and we calculate this vote with the rest
 
@@ -25,13 +24,14 @@ const receiveVote = (req, res) => {
         const votes = req.body.votes;
         votes.forEach((vote) => {
             c = bigInt(vote).multiply(c);
+            console.log(vote);
+            console.log(c);
         });
-
-        c = c.mod(req.app.locals.parameters.n);
+        const n = bigInt(req.app.locals.parameters.n);
+        c = c.mod(n.square());
 
         if (vote.rows[0]) {
-            c = bigInt(vote.rows[0].count).multiply(c).mod(req.app.locals.parameters.n);
-            console.log(c);
+            c = bigInt(vote.rows[0].votes).multiply(c).mod(n);
             postgres.query(`UPDATE vote set votes = ${c.toString()}  WHERE votes = '${vote.rows[0].count}'`).then((v, error) => {
                 console.log(v);
 
