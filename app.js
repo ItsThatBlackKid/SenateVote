@@ -7,9 +7,9 @@ const logger = require('morgan');
 const knex = require('knex');
 const Pool = require('pg').Pool;
 
-const postgresdb = process.env.POSTGRES_DB || "votedb";
+const postgresdb = process.env.POSTGRES_DB || "senatevote";
 const postgreshost = process.env.POSTGRES_HOST || "localhost";
-const postgresuser = process.env.POSTGRES_USER || "shekukanneh";
+const postgresuser = process.env.POSTGRES_USER || "sheku";
 const postgrespass = process.env.POSTGRES_PWD || "pokemon244";
 const pool = new Pool({
   user:postgresuser,
@@ -60,6 +60,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/votes', votesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,44 +1,90 @@
 import React, {Component, Fragment} from 'react';
-import crypto from  '../api/client'
-const bigInt = require("big-integer");
+import "../styles/VotingBooth.css"
+import bob from '../img/bob.png';
+import alice from '../img/alice.png'
+import client from '../api/client'
+import tick from '../img/checked.svg';
 
-const voteDiv = {
-    height: "600px",
-    width: "100%",
-    textAlign: "center",
-    margin:"0px auto",
-    display: "flex",
-    flexDirection: "row"
-};
+const bigInt = require("big-integer");
 
 
 class VotingBooth extends Component {
     state = {
-        vote: 0,
+        votes: [],
+        vote: null,
+        message: "",
     };
 
     componentWillMount() {
-        crypto.crypto.getPublicKey().then((res) => {
-            sessionStorage.setItem("n",res.data.n);
-            sessionStorage.setItem("g",res.data.g)
+        client.crypto.getPublicKey().then((res) => {
+            sessionStorage.setItem("n", res.data.n);
+            sessionStorage.setItem("g", res.data.g)
         });
 
 
-        const r = bigInt.randBetween("1","400");
-        sessionStorage.setItem("r",r.toString());
 
     }
 
+    onClick = (e) => {
+        this.setState({vote: Number(e.target.id)})
+    };
+
+    makeVote = (e) => {
+        const r = bigInt.randBetween("1", "400");
+        const n = sessionStorage.getItem("n");
+        const g = sessionStorage.getItem("g");
+        const num = this.state.vote;
+        const c = g.modPow(num, n.square()).multiply(r.modPow(n, n.square()));
+
+        this.setState({
+            votes: this.state.votes.concat([c]),
+            vote: 0
+        })
+    };
+
+    submitVote = (e) => {
+
+
+        client.vote.makeVote(this.state.votes).then((res) => {
+            this.setState({
+                message: "Vote submitted",
+            })
+        })
+    };
+
+
+
     render() {
+        let {vote} = this.state;
         return (
-            <div style={voteDiv}>
-                <div style={{marginRight: "40px"}} id={"6"}>
-                    <h1>Hello World</h1>
+            <Fragment>
+                <div className={"wrapper"}>
+                    <div>
+                    <div className={"voteWrapper"}>
+                        <div className={"vote"} id={"8"} onClick={this.onClick}>
+                            <img alt={"vote for alice"} src={alice}/>
+                            <h3>Alice</h3>
+                            {vote == 8 ?
+                                <div><img alt={"tick"} height={40} width={40} color={"white"} src={tick}/></div> : ""}
+                        </div>
+                        <div className={"vote"} id={"1"} onClick={this.onClick}>
+                            <img alt={"vote for bob"} src={bob}/>
+                            <h3>Bob</h3>
+                            {vote == 1 ?
+                                <div><img alt={"tick"} height={40} width={40} color={"white"} src={tick}/></div> : ""}
+                        </div>
+                    </div>
+                    <button className={"submit"} onClick={this.submitVote}>Make Vote</button>
+                    </div>
+                    <div id={"n-votes"}>
+                        {this.state.votes.map((vote) =>
+                            <p key={vote} className={"vote-show"}>
+                                vote: {this.state.votes.indexOf(vote)}
+                            </p>
+                        )}
+                    </div>
                 </div>
-                <div id={"8"}>
-                    <h1>Hello y'all</h1>
-                </div>
-            </div>
+            </Fragment>
         )
     }
 }

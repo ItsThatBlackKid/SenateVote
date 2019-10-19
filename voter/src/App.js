@@ -3,10 +3,16 @@ import logo from './logo.svg';
 import './App.css';
 import VotingBooth from "./views/VotingBooth";
 
+const headerStyle = {
+    textAlign: "left",
+    /*padding: "0 10px 0",*/
+    background: "#eb3477"
+}
+
 function App() {
   return (
     <div className="App">
-        <header style={{textAlign: "left", padding: "0 10px 0"}}><h1>Senate Voting Booth</h1></header>
+        <header className={"App-header"}><h1>Senate Voting Booth</h1></header>
         <VotingBooth/>
     </div>
   );
